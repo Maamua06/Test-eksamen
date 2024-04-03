@@ -1,0 +1,21 @@
+/* Css for Navbar component*/
+.navbar {
+  background-color: #333;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar li {
+  display: inline;
+}
+
+.navbar a {
+  display: inline-block;
+  padding: 20px 194px;
+  color: #fff;
+  text-decoration: none;
+}
