@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 
@@ -19,7 +19,6 @@ const textSchema = new Schema({
         type: Date,
         default: Date.now
     }
-});
+}, { timestamps: true })
 
-module.exports = mongoose.model('Text', textSchema);
-
+module.exports = mongoose.model('Text', textSchema)

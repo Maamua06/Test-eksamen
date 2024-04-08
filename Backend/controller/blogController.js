@@ -1,97 +1,96 @@
-const Text = require('../models/blogModels'); 
+const Blog = require('../models/blogModels');
 const mongoose = require('mongoose');
 
-// Get all blogs
+// get all blogs
 const getBlogs = async (req, res) => {
-    const blogs = await Text.find({}).sort({createdAt: -1});
+  const user_id = req.user._id;
 
-    res.status(200).json(blogs);
-}
+  const blogs = await Blog.find({ user_id }).sort({ createdAt: -1 });
 
-// Get One blog
+  res.status(200).json(blogs);
+};
+
+// get a single blog
 const getBlog = async (req, res) => {
-    const {id} = req.params
-    
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'Id is not valid'})
-    }
+  const { id } = req.params;
 
-    const blog = await Text.findById(id);
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: 'No such blog' });
+  }
 
-    if (!Text) {
-        return res.status(404).json({ error: 'No blogs with this id'})
-    }
+  const blog = await Blog.findById(id);
 
-    res.status(200).json(blog);
-}
+  if (!blog) {
+    return res.status(404).json({ error: 'No such blog' });
+  }
 
-// Create new blog
+  res.status(200).json(blog);
+};
+
+// create new blog
 const createBlog = async (req, res) => {
-    const {title, author, body} = req.body;
+  const { title, body } = req.body;
 
-    let emptyFields = []
+  let emptyFields = [];
 
-    if(!title) {
-        emptyFields.push('title')
-    }
-    if(!author) {
-        emptyFields.push('author')
-    }
-    if(!body) {
-        emptyFields.push('body')
-    }
-    if(emptyFields.length > 0) {
-        return res.status(400).json({ error: 'Please fill in empty fields', emptyFields})
-    }
+  if (!title) {
+    emptyFields.push('title');
+  }
+  if (!body) {
+    emptyFields.push('body');
+  }
+  if (emptyFields.length > 0) {
+    return res.status(400).json({ error: 'Please fill in all the fields', emptyFields });
+  }
 
-    // Add document to db
-    try{
-        const text = await Text.create({ title, author, body})
-        res.status(200).json(text)
-    } catch (error) {
-        res.status(400).json( { error: error.message })
-    }
-}
+  // add doc to db
+  try {
+    const user_id = req.user._id;
+    const blog = await Blog.create({ title, body, user_id });
+    res.status(200).json(blog);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
-// Delete blog
+// delete a blog
 const deleteBlog = async (req, res) => {
-    const { id } = req.params
+  const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'Id is not valid'})
-    }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: 'No such blog' });
+  }
 
-    const text = await Text.findByIdAndDelete({_id: id})
+  const blog = await Blog.findOneAndDelete({ _id: id });
 
-    if (!Text) {
-        return res.status(400).json({ error: 'No blogs with this id'})
-    }
+  if (!blog) {
+    return res.status(400).json({ error: 'No such blog' });
+  }
 
-    res.status(200).json(text)
-}
+  res.status(200).json(blog);
+};
 
-
-// Update blog
+// update a blog
 const updateBlog = async (req, res) => {
-    const { id } = req.params
+  const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'Id is not valid'})
-    }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: 'No such blog' });
+  }
 
-    const text = await Text.findByIdAndUpdate({_id:id}, {...req.body})
+  const blog = await Blog.findOneAndUpdate({ _id: id }, { ...req.body });
 
-    if (!Text) {
-        return res.status(400).json({ error: 'No blogs with this id'})
-    }
+  if (!blog) {
+    return res.status(400).json({ error: 'No such blog' });
+  }
 
-    res.status(200).json(text)
-}
+  res.status(200).json(blog);
+};
 
 module.exports = {
-    getBlogs,
-    getBlog,
-    createBlog,
-    deleteBlog,
-    updateBlog
-}
+  getBlogs,
+  getBlog,
+  createBlog,
+  deleteBlog,
+  updateBlog
+};

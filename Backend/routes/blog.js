@@ -1,22 +1,31 @@
-const { Router } = require('express');
-const Text = require('../models/blogModels');
-const { getBlogs, getBlog, createBlog, deleteBlog, updateBlog,  } = require('../controller/blogController');
+const express = require('express');
+const {
+  createBlog,
+  getBlogs,
+  getBlog,
+  deleteBlog,
+  updateBlog
+} = require('../controller/blogController');
+const requireAuth = require('../middleware/requireAuth');
 
-const router = Router();
+const router = express.Router();
 
-// Get all blogs
+// require auth for all blog routes
+router.use(requireAuth);
+
+// GET all blogs
 router.get('/', getBlogs);
 
-// Get one blog
+// GET a single blog
 router.get('/:id', getBlog);
 
-// Create new blog
-router.post('/', createBlog)
+// POST a new blog
+router.post('/', createBlog);
 
-// Delete blog
+// DELETE a blog
 router.delete('/:id', deleteBlog);
 
-// Update blog
-router.patch('/:id', updateBlog)
+// UPDATE a blog
+router.patch('/:id', updateBlog);
 
 module.exports = router;

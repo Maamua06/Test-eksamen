@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useBlogsContext } from '../hooks/useBlogContext';
+import { useBlogsContext } from '../hooks/useBlogsContext';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 

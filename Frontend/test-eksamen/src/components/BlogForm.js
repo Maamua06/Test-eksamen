@@ -1,76 +1,83 @@
-import { useState } from "react";
-import { useBlogsContext } from '../hooks/useBlogContext';
-import '../App.css';
+import { useState } from "react"
+import { useBlogsContext } from "../hooks/useBlogsContext"
+import { useAuthContext } from '../hooks/useAuthContext'
 
 const BlogForm = () => {
-    const {dispatch} = useBlogsContext();
-    const [title, setTitle] = useState('');
-    const [author, setAuthor] = useState('');
-    const [body, setBody] = useState('');
-    const [error, setError] = useState(null);
-    const [emptyFields, setEmptyFields] = useState('');
+  const { dispatch } = useBlogsContext()
+  const { user } = useAuthContext()
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [body, setBody] = useState('')
+  const [error, setError] = useState(null)
+  const [emptyFields, setEmptyFields] = useState([])
 
-        const blog = {title, author, body};
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
-        const response = await fetch('/api/blogs', {
-            method: 'POST',
-            body: JSON.stringify(blog),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        const json = await response.json();
+    if (!user) {
+      setError('You must be logged in')
+      return
+    }
 
-        if (!response.ok) {
-            setError(json.error);
-            setEmptyFields(json.emptyFields)
-        }
-        if (response.ok) {
-            setTitle('');
-            setAuthor('');
-            setBody('');
-            setError(null);
-            setEmptyFields([]);
-            console.log('new blog added', json);
-            dispatch({type: 'CREATE_BLOG', payload: json})
-        }
-    };
+    const blog = {title, author, body}
 
-    return ( 
-        <form className="FormBox" onSubmit={handleSubmit}>
-        <h3 className="FormTitle">Add a new blog</h3>
+    const response = await fetch('/api/workouts', {
+      method: 'POST',
+      body: JSON.stringify(blog),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    const json = await response.json()
 
-        <label className="Label">Blog Title:</label>
-        <input
-            type="text"
-            onChange={e => setTitle(e.target.value)}
-            value={title}
-            className={emptyFields.includes('title') ? 'error' : 'input'}
-        />
+    if (!response.ok) {
+      setError(json.error)
+      setEmptyFields(json.emptyFields)
+    }
+    if (response.ok) {
+      setTitle('')
+      setAuthor('')
+      setBody('')
+      setError(null)
+      setEmptyFields([])
+      dispatch({type: 'CREATE_BLOG', payload: json})
+    }
+  }
 
-        <label className="Label">Author:</label>
-        <input
-            type="text"
-            onChange={e => setAuthor(e.target.value)}
-            value={author}
-            className={emptyFields.includes('author') ? 'error' : 'input'}
-        />
+  return (
+    <form className="FormBox" onSubmit={handleSubmit}>
+      <h3>Add a New Blog</h3>
 
-        <label className="Label">Body:</label>
-        <input
-            type="text"
-            onChange={e => setBody(e.target.value)}
-            value={body}
-            className={emptyFields.includes('body') ? 'error' : 'input'}
-        />
+      <label>Blog Title:</label>
+      <input 
+        type="text"
+        onChange={(e) => setTitle(e.target.value)}
+        value={title}
+        className={emptyFields.includes('title') ? 'error' : 'input'}
+      />
 
-        <button className="Button">Add Blog</button>
-        {error && <div className="Error">{error}</div>}
-        </form>
-     );
-};
- 
-export default BlogForm;
+      <label>Author:</label>
+      <input 
+        type="text"
+        onChange={(e) => setAuthor(e.target.value)}
+        value={author}
+        className={emptyFields.includes('body') ? 'error' : 'input'}
+      />
+
+      <label>body:</label>
+      <input 
+        type="text"
+        onChange={(e) => setBody(e.target.value)}
+        value={body}
+        className={emptyFields.includes('body') ? 'error' : 'input'}
+      />
+
+      <button>Add Blog</button>
+      {error && <div className="error">{error}</div>}
+    </form>
+  )
+}
+
+export default BlogForm
