@@ -1,13 +1,31 @@
 const express = require('express');
 const mongoose = require('mongoose');
+require('dotenv').config()
+
 
 const app = express();
 
-const PORT = 5000;
-const dbURI = 'mongodb://10.12.13.30:27017/test-eksamen?directConnection=true&appName=mongosh+2.2.2';
 
-app.listen(PORT, () => {
-    mongoose.connect(dbURI)
+// Import fra andre filer
+const blogRoutes = require('./routes/blog'); 
+
+// Middelware
+app.use(express.json())
+
+app.use((req, res, next) => {
+    console.log(req.path, req.method)
+    next()
+})
+
+
+
+
+app.listen(process.env.PORT, () => {
+    mongoose.connect(process.env.MONGO_URI)
         .then(console.log('db conect'))
         .catch(err => console.log(err))
 });
+
+app.use('/api/blogs', blogRoutes);
+
+
