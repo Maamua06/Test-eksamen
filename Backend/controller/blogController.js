@@ -29,6 +29,21 @@ const getBlog = async (req, res) => {
 const createBlog = async (req, res) => {
     const {title, author, body} = req.body;
 
+    let emptyFields = []
+
+    if(!title) {
+        emptyFields.push('title')
+    }
+    if(!author) {
+        emptyFields.push('author')
+    }
+    if(!body) {
+        emptyFields.push('body')
+    }
+    if(emptyFields.length > 0) {
+        return res.status(400).json({ error: 'Please fill in empty fields', emptyFields})
+    }
+
     // Add document to db
     try{
         const text = await Text.create({ title, author, body})

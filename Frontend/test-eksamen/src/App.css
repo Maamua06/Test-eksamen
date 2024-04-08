@@ -1,3 +1,7 @@
+:root {
+  --error: #e7195a;
+}
+
 /* Css for Navbar component*/
 .navbar {
   background-color: #333;
@@ -45,8 +49,8 @@
 }
 
 /* CSS for Input */
-.Input {
-  width: 100%;
+.input {
+  width: 96%;
   padding: 10px;
   margin-bottom: 20px;
   border: 1px solid #ccc;
@@ -69,5 +73,13 @@
   margin-top: 10px;
   border: 2px solid red;
   padding: 10px;
+  border-radius: 4px;
+}
+
+input.error {
+  border: 1px solid var(--error);
+  width: 96%;
+  padding: 10px;
+  margin-bottom: 20px;
   border-radius: 4px;
 }

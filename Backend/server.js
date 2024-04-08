@@ -2,12 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config()
 
+// Import fra andre filer
+const blogRoutes = require('./routes/blog'); 
+const userRoutes = require('./routes/user');
 
 const app = express();
 
-
-// Import fra andre filer
-const blogRoutes = require('./routes/blog'); 
 
 // Middelware
 app.use(express.json())
@@ -26,6 +26,8 @@ app.listen(process.env.PORT, () => {
         .catch(err => console.log(err))
 });
 
+// Routes
 app.use('/api/blogs', blogRoutes);
+app.use('/api/user', userRoutes);
 
 

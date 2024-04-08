@@ -1,49 +1,40 @@
-const User = require('../models/userModels');
-const jwt = require('jsonwebtoken');
+const User = require('../models/userModels')
+const jwt = require('jsonwebtoken')
 
-// Handle error
-const handleError = (err) => {
-    console.log(err.message, err.code);
-    let errors = {email: '', password: ''};
-
-    // Feil email
-    if(err.message === 'Incorrect email') {
-        errors.email = 'This email is not registered';
-        return errors;
-    };
-
-    // Feil passord
-    if(err.message  === 'Incorrect password') {
-        errors.password = 'This password is incorrect';
-    };
-
-    // Duplicate error
-    if(err.code === 11000) {
-        errors.email = 'That email is already registred';
-    };
-
-    // Validation errors
-    if(err.message.includes('user validation failed')) {
-        Object.values(err.errors).forEach(({properties}) => {
-            errors[properties.path] = properties.message;
-        });
-    }
-
-    return errors;
-
-};
-
-
-// JWT funkjson
-const maxAge = 1 * 24 * 60 * 60;
-
-const createToken = (id) => {
-    return jwt.sign( { id }, 'jegerkul', {
-        expiresIn: maxAge
-    });
-};
-
-// signup funksjon
-module.exports = {
-    createToken
+const createToken = (_id) => {
+  return jwt.sign({_id}, process.env.SECRET, { expiresIn: '3d' })
 }
+
+// login a user
+const loginUser = async (req, res) => {
+  const {email, password} = req.body
+
+  try {
+    const user = await User.login(email, password)
+
+    // create a token
+    const token = createToken(user._id)
+
+    res.status(200).json({email, token})
+  } catch (error) {
+    res.status(400).json({error: error.message})
+  }
+}
+
+// signup a user
+const signupUser = async (req, res) => {
+  const {email, password} = req.body
+
+  try {
+    const user = await User.signup(email, password)
+
+    // create a token
+    const token = createToken(user._id)
+
+    res.status(200).json({email, token})
+  } catch (error) {
+    res.status(400).json({error: error.message})
+  }
+}
+
+module.exports = { signupUser, loginUser }

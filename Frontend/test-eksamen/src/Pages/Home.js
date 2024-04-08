@@ -26,7 +26,7 @@ const Home = () => {
     }
 
     fetchBlogs();
-  }, [])
+  }, [dispatch])
 
   return (
     <div className="App">
