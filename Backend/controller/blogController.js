@@ -3,9 +3,8 @@ const mongoose = require('mongoose');
 
 // get all blogs
 const getBlogs = async (req, res) => {
-  const user_id = req.user._id;
 
-  const blogs = await Blog.find({ user_id }).sort({ createdAt: -1 });
+  const blogs = await Blog.find().sort({ createdAt: -1 });
 
   res.status(200).json(blogs);
 };
@@ -29,24 +28,15 @@ const getBlog = async (req, res) => {
 
 // create new blog
 const createBlog = async (req, res) => {
-  const { title, body } = req.body;
-
-  let emptyFields = [];
-
-  if (!title) {
-    emptyFields.push('title');
-  }
-  if (!body) {
-    emptyFields.push('body');
-  }
-  if (emptyFields.length > 0) {
-    return res.status(400).json({ error: 'Please fill in all the fields', emptyFields });
-  }
-
-  // add doc to db
+  const { title, body, author } = req.body;
+  
   try {
+    if(!title || !body || !author){
+      throw Error("Please fill in all the fields")
+    }
+    // add doc to db
     const user_id = req.user._id;
-    const blog = await Blog.create({ title, body, user_id });
+    const blog = await Blog.create({ title, body, author, user_id });
     res.status(200).json(blog);
   } catch (error) {
     res.status(400).json({ error: error.message });
